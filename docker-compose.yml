@@ -12,36 +12,31 @@ services:
     #  - /var/run/docker.sock:/tmp/docker.sock:ro
 
   db:
-    image: mysql:8.0
+    build: ./db
     container_name: "db_container"
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: wordpress
-      #MYSQL_DATABASE: wp_test_db
-      #MYSQL_USER: wp_test_user
-      #MYSQL_PASSWORD: Wordpress1!
+      MYSQL_DATABASE: wp_test
+      MYSQL_USER: wp_user
+      MYSQL_PASSWORD: Wordpress1!
     volumes:
       - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
     ports:
       - "3306:3306"
 
   wordpress:
-    image: wordpress:6.0.3-php7.4-apache
+    build: ./wordpress
     container_name: "wordpress_container"
     restart: always
-    ports:
-      - "80:80"
-    environment:
+    #environment:
       #VIRTUAL_HOST: onya-lab.site
       #VIRTUAL_PORT: "80"
-      WORDPRESS_DB_HOST: db:3306
-      #WORDPRESS_DB_USER: wp_test_user
-      #WORDPRESS_DB_PASSWORD: Wordpress1!
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress
+    volumes:
+      - ./wordpress/wp-config.php:/var/www/html/wp-config.php
+      - ./wordpress/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
+    ports:
+      - "80:80"
     depends_on:
       - db
   
@@ -53,8 +48,8 @@ services:
       #VIRTUAL_HOST: pma.onya-lab.site
       PMA_ARBITRARY: 1
       PMA_HOSTS: db:3306
-      PMA_USER: wordpress
-      PMA_PASSWORD: wordpress
+      PMA_USER: wp_user
+      PMA_PASSWORD: Wordpress1!
     volumes:
       - ./phpmyadmin/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
     ports:
