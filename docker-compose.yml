@@ -1,15 +1,13 @@
 version: '3'
 services:
-  #proxy:
-   # build: ./proxy
-    #container_name: proxy_container
-    #restart: always
-    #ports:
-    #  - "80:80"
-    #networks:
-    #  - wordpress-network
-    #volumes:
-    #  - /var/run/docker.sock:/tmp/docker.sock:ro
+  proxy:
+    image: jwilder/nginx-proxy
+    container_name: proxy_container
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
 
   db:
     build: ./db
@@ -21,7 +19,7 @@ services:
       MYSQL_USER: wp_user
       MYSQL_PASSWORD: Wordpress1!
     volumes:
-      - ./mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+      - .db/mysql/mymy.cnf:/etc/mysql/conf.d/my.cnf
     ports:
       - "3306:3306"
 
@@ -29,31 +27,32 @@ services:
     build: ./wordpress
     container_name: "wordpress_container"
     restart: always
-    #environment:
-      #VIRTUAL_HOST: onya-lab.site
-      #VIRTUAL_PORT: "80"
+    environment:
+      VIRTUAL_HOST: onya-lab.site
+      VIRTUAL_PORT: "80"
     volumes:
       - ./wordpress/wp-config.php:/var/www/html/wp-config.php
       - ./wordpress/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
-    ports:
-      - "80:80"
+    #ports:
+    #  - "8000:8000"
     depends_on:
       - db
   
   phpmyadmin:
-    image: phpmyadmin
+    build: ./phpmyadmin
     container_name: "pma_container"
     restart: always
     environment:
-      #VIRTUAL_HOST: pma.onya-lab.site
+      VIRTUAL_HOST: pma.onya-lab.site
+      VIRTUAL_PORT: "8080"
       PMA_ARBITRARY: 1
       PMA_HOSTS: db:3306
       PMA_USER: wp_user
       PMA_PASSWORD: Wordpress1!
     volumes:
       - ./phpmyadmin/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
-    ports:
-      - "8080:8080"
+    #ports:
+    #  - "8080:8080"
     depends_on:
       - db
 
