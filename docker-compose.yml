@@ -44,15 +44,15 @@ services:
     restart: always
     environment:
       VIRTUAL_HOST: pma.onya-lab.site
-      VIRTUAL_PORT: "8080"
+      #VIRTUAL_PORT: "8080"
       PMA_ARBITRARY: 1
-      PMA_HOSTS: db:3306
+      PMA_HOSTS: db
       PMA_USER: wp_user
       PMA_PASSWORD: Wordpress1!
     volumes:
       - ./phpmyadmin/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
-    #ports:
-    #  - "8080:8080"
+    ports:
+      - "8080:8080"
     depends_on:
       - db
 
